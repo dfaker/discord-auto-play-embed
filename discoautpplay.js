@@ -24,10 +24,12 @@ setInterval(function(){
 	var last;
 	for (var vi = 0; vi < videoList.length; vi++) {
 		last=videoList[vi];
-		if(aploopcheckbox && aploopcheckbox.checked && !last.loop){
-			last.loop=true;
-		}else if(aploopcheckbox && !aploopcheckbox.checked && last.loop==true){
-			last.loop=false;
+		if(last.parentElement && last.parentElement.childElementCount==4){
+			if(aploopcheckbox && aploopcheckbox.checked && !last.loop){
+				last.loop=true;
+			}else if(aploopcheckbox && !aploopcheckbox.checked && last.loop==true){
+				last.loop=false;
+			}
 		}
 	}
 	if(apcheckbox && apcheckbox.checked && last && !last.className.includes('autoPlayed') && last.parentElement && last.parentElement.childElementCount==4){
