@@ -9,11 +9,21 @@ function isScrolledIntoView(el) {
 }
 
 setInterval(function(){ 
-	var videoList = document.getElementsByTagName('video');
-	var apcheckbox = document.getElementById('apVideocheck');
+	var playableMediasTemp = document.querySelectorAll('video,img');
+	var playableMedias     = [];
+	for (var vi = 0; vi < playableMediasTemp.length; vi++) {
+		var media = playableMediasTemp[vi];
+		if(media.className.includes('embedVideo') || media.className.includes('video')){
+			playableMedias.push(media);
+		}
+		if(media.tagName =='IMG' && media.className=='' && media.parentElement.className && media.parentElement.className.includes('imageWrapper')){
+			playableMedias.push(media);
+		}
+	}
+
 	var apVischeckbox = document.getElementById('apVisVideocheck');
 	var aploopcheckbox = document.getElementById('apLoopcheck');
-	if(!apcheckbox){
+	if(!apVischeckbox){
 		var apdiv = document.createElement('div');
 		apdiv.style.zIndex = '999';
 		apdiv.style.color = 'white';
@@ -23,8 +33,6 @@ setInterval(function(){
 		apdiv.style.left = '308px';
 		apdiv.style.top = '19px';
 		apdiv.style.fontSize = '13px';
-		apdiv.innerHTML =  '<input id="apVideocheck" name="apVideocheck" type="checkbox">';
-		apdiv.innerHTML += '<label for="apVideocheck">AutoPlay New Video</label>';
 
 		apdiv.innerHTML +=  '<input id="apVisVideocheck" name="apVisVideocheck" type="checkbox">';
 		apdiv.innerHTML += '<label for="apVisVideocheck">AutoPlay All Visible</label>';
@@ -34,46 +42,77 @@ setInterval(function(){
 		document.body.appendChild(apdiv);
 	}
 
+
 	var last;
-	for (var vi = 0; vi < videoList.length; vi++) {
-		last=videoList[vi];
-		if(last.parentElement && last.parentElement.childElementCount==4){
-			if(aploopcheckbox && aploopcheckbox.checked && !last.loop){
-				last.loop=true;
-			}else if(aploopcheckbox && !aploopcheckbox.checked && last.loop==true){
-				last.loop=false;
-			}
-		}
-		if(apVisVideocheck && apVisVideocheck.checked && last.parentElement && last.parentElement.childElementCount==4){
-			if(isScrolledIntoView(last)){
-				if(!last.className.includes('autoPlayed') && last.paused){
-					last.classList.add("autoPlayed");
-					last.click();
-				}else if(last.paused){
-					last.play();
+	for (var vi = 0; vi < playableMedias.length; vi++) {
+		last=playableMedias[vi];
+		if( isScrolledIntoView(last)){
+			if(apVischeckbox && apVischeckbox.checked){
+				if(last.className.includes('video')){
+
+					if(!last.className.includes('autoPlayed') && last.paused){
+						last.classList.add("autoPlayed");
+						last.click();
+					}else if(last.paused){
+						last.play();
+					}
+					if(aploopcheckbox && aploopcheckbox.checked){
+						last.loop=true;
+					}else{
+						last.loop=false;
+					}
+
+				}else if(last.className.includes('embedVideo')){
+
+					if(!last.className.includes('autoPlayed') && last.paused){
+						last.classList.add("autoPlayed");
+						last.play();
+					}else if(last.paused){
+						last.play();
+					}
+
+					if(last.previousSibling && last.previousSibling.className.includes('imageAccessory')){
+						last.previousSibling.style.display='None';
+					}
+
+					if(aploopcheckbox && aploopcheckbox.checked){
+						last.loop=true;
+					}else{
+						last.loop=false;
+					}
+
+				}else if(last.tagName =='IMG'){
+
+					if(!last.getAttribute('origsrc') && last.getAttribute('src')){
+						last.setAttribute('origsrc',last.getAttribute('src'));	
+					}
+					if(last.getAttribute('origsrc')){
+						var newSrc = last.getAttribute('origsrc').split('?')[0];
+						if(last.getAttribute('src') != newSrc){
+							last.setAttribute('src',newSrc);	
+							if(last.previousSibling && last.previousSibling.className.includes('imageAccessory')){
+								last.previousSibling.style.display='None';
+							}
+							
+						}
+					}
+
+					
 				}
-			}else if(!last.paused){
-				last.pause()
 			}
-		}
-		if(apVisVideocheck && apVisVideocheck.checked && last.parentElement && last.parentElement.childElementCount!=4){
-			if(isScrolledIntoView(last)){
-				if(last.paused){
-					last.play();
+		}else{
+			if(last.className.includes('video') || last.className.includes('embedVideo')){
+				if(!last.paused && last.pause){
+					last.pause()
 				}
-			}else if(!last.paused){
-				last.pause()
+
+			}else if(last.tagName =='IMG'){
+				if(last.getAttribute('origsrc')){
+					last.setAttribute('src',last.getAttribute('origsrc'));
+				}
 			}
 		}
+
 	}
-	if(apcheckbox && apcheckbox.checked && last && !last.className.includes('autoPlayed') && last.parentElement && last.parentElement.childElementCount==4){
-		last.classList.add("autoPlayed");
-		last.click();
-	}
-	if(apcheckbox && apcheckbox.checked && last && !last.className.includes('autoPlayed') && last.parentElement && last.parentElement.childElementCount!=4){
-		last.classList.add("autoPlayed");
-		if(!last.paused){
-			last.play();
-		}
-	}
- }, 100);
+
+},100);
