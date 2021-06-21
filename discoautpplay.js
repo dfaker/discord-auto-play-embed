@@ -1,3 +1,5 @@
+
+
 setInterval(function(){ 
 	var videoList = document.getElementsByTagName('video');
 	var apcheckbox = document.getElementById('apVideocheck');
@@ -12,7 +14,10 @@ setInterval(function(){
 		apdiv.style.left = '308px';
 		apdiv.style.top = '19px';
 		apdiv.style.fontSize = '13px';
-		apdiv.innerHTML = '<input id="apVideocheck" name="apVideocheck" type="checkbox">  <label for="apVideocheck">AutoPlay New Video</label>  <input id="apLoopcheck" ame="apLoopcheck" type="checkbox"> <label for="apLoopcheck">Loop Videos</label>  ';
+		apdiv.innerHTML =  '<input id="apVideocheck" name="apVideocheck" type="checkbox">';
+		apdiv.innerHTML += '<label for="apVideocheck">AutoPlay New Video</label>';
+		apdiv.innerHTML += '<input id="apLoopcheck" ame="apLoopcheck" type="checkbox">'
+		apdiv.innerHTML += '<label for="apLoopcheck">Loop Videos</label>';
 		document.body.appendChild(apdiv);
 	}
 
@@ -28,5 +33,9 @@ setInterval(function(){
 	if(apcheckbox && apcheckbox.checked && last && !last.className.includes('autoPlayed') && last.parentElement && last.parentElement.childElementCount==4){
 		last.classList.add("autoPlayed");
 		last.click();
+	}
+	if(apcheckbox && apcheckbox.checked && last && !last.className.includes('autoPlayed') && last.parentElement && last.parentElement.childElementCount!=4){
+		last.classList.add("autoPlayed");
+		last.play();
 	}
  }, 100);
