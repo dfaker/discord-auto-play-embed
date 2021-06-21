@@ -72,6 +72,8 @@ setInterval(function(){
 	}
 	if(apcheckbox && apcheckbox.checked && last && !last.className.includes('autoPlayed') && last.parentElement && last.parentElement.childElementCount!=4){
 		last.classList.add("autoPlayed");
-		last.play();
+		if(!last.paused){
+			last.play();
+		}
 	}
  }, 100);
